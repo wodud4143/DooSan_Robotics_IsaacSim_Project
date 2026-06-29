@@ -50,9 +50,6 @@ class RGBYOLOViewer(Node):
         self.get_logger().info('YOLO RIGHT dual_suction_mount camera node started')
         self.get_logger().info(f'Subscribed TF topic: {TF_TOPIC}')
 
-        # Create resizable OpenCV window and set to 320x320
-        cv2.namedWindow('YOLO Detection L', cv2.WINDOW_NORMAL)
-        cv2.resizeWindow('YOLO Detection L', 320, 320)
     def tf_callback(self, msg):
         for tf in msg.transforms:
             if tf.header.frame_id != PARENT_FRAME:
@@ -158,14 +155,16 @@ class RGBYOLOViewer(Node):
     def image_callback(self, msg):
         try:
             frame = self.image_msg_to_bgr(msg)
-            results = self.model(frame, verbose=False, conf=0.70)
+            results = self.model(frame, verbose=False)
 
             box_detected = False
             barcode_detected = False
 
             best_box = None
-            best_conf = 0.0
-            barcode_boxes = []
+            best_box_conf = 0.0
+
+            best_barcode = None
+            best_barcode_conf = 0.0
 
             for result in results:
                 for box in result.boxes:
@@ -179,31 +178,34 @@ class RGBYOLOViewer(Node):
 
                     if cls_id == 0:
                         box_detected = True
-                        if conf > best_conf:
-                            best_conf = conf
+                        if conf > best_box_conf:
+                            best_box_conf = conf
                             best_box = (x1, y1, x2, y2, conf)
 
                     elif cls_id == 1:
                         barcode_detected = True
-                        barcode_boxes.append((x1, y1, x2, y2, conf))
-
+                        if conf > best_barcode_conf:
+                            best_barcode_conf = conf
+                            best_barcode = (x1, y1, x2, y2, conf)
             self.publish_exist(
                 box_exist=1 if box_detected else 0,
                 barcode_exist=1 if barcode_detected else 0
             )
 
-            for bx1, by1, bx2, by2, bconf in barcode_boxes:
+            if best_barcode is not None:
+                bx1, by1, bx2, by2, bconf = best_barcode
+
                 cv2.rectangle(frame, (bx1, by1), (bx2, by2), (0, 0, 255), 3)
                 cv2.putText(
                     frame,
-                    f'BARCODE {bconf:.2f}',
+                    f'BEST BARCODE {bconf:.2f}',
                     (bx1, max(by1 - 10, 20)),
                     cv2.FONT_HERSHEY_SIMPLEX,
                     0.6,
                     (0, 0, 255),
                     2,
                     cv2.LINE_AA
-                )
+    )
 
             if best_box is not None:
                 x1, y1, x2, y2, conf = best_box
