@@ -288,6 +288,17 @@ cd /home/rokey/isaac-sim   # 실제 Isaac Sim 설치 경로로 변경
     --usd /home/rokey/Downloads/dual_suction_tf_barcode_LR.usd \
     --spawn-interval 40.0
 ```
+> rclpy 오류 시 아래 코드 터미널 복사
+```unset PYTHONPATH
+unset AMENT_PREFIX_PATH
+unset COLCON_PREFIX_PATH
+unset CMAKE_PREFIX_PATH
+unset ROS_PACKAGE_PATH
+
+export isaac_sim_package_path=/home/rokey/dev_ws/isaac_sim/isaacsim/_build/linux-x86_64/release
+export ROS_DISTRO=humble
+export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+export LD_LIBRARY_PATH=$isaac_sim_package_path/exts/isaacsim.ros2.bridge/humble/lib:$LD_LIBRARY_PATH
 
 **실행 인자 설명:**
 
