@@ -45,7 +45,7 @@ CodeBaro는 **NVIDIA Isaac Sim** 기반 디지털 트윈 환경에서 **Dual UR1
 - **왼팔** — 바코드 검출 결과에 따라 90° 정렬 또는 180° 뒤집기로 추가 검사
 - **Sorter** — 최종 판정에 따라 정상 / 불량 라인을 자동 분기
 
-![system_arch](docs/images/system_arch.png)
+![system_arch](docs/images/outline.png)
 
 ---
 
