@@ -1,0 +1,58 @@
+# =============================================================
+# CodeBaro — Smart Barcode Sorting System
+# Python Requirements (ROS2 Humble + Isaac Sim 5.1 환경 기준)
+# OS: Ubuntu 22.04 LTS | Python: 3.10
+# =============================================================
+#
+# ⚠ 설치 환경 주의사항
+# 이 프로젝트는 Python 실행 환경이 두 개로 분리되어 있습니다.
+#
+# 1) ROS2 노드 / Web UI 환경 (detection_L.py, detection_R.py,
+#    codebaro_monitoring_system.py 등)
+#    → 시스템 Python(3.10) 기준으로 일반 설치하면 됩니다.
+#      pip install -r requirements.txt
+#
+# 2) Isaac Sim 환경 (stand_alone.py 실행용)
+#    → Isaac Sim은 자체 내장 Python을 사용하므로
+#      시스템 pip로 설치한 패키지를 인식하지 못합니다.
+#      반드시 Isaac Sim 내부 Python으로 별도 설치해야 합니다.
+#      cd /home/rokey/isaac-sim   # 실제 Isaac Sim 설치 경로
+#      ./python.sh -m pip install -r requirements.txt
+#
+# 즉, stand_alone.py 쪽에서 numpy/scipy 등을 직접 사용한다면
+# 위 1), 2) 두 환경 모두에 설치해야 누락 없이 동작합니다.
+# =============================================================
+
+# ── Vision / YOLO ────────────────────────────────────────────
+ultralytics          # YOLO11 모델 로드 및 추론 (best.pt)
+opencv-python        # 카메라 영상 처리, OpenCV 창 표시
+
+# ── 수치 연산 ─────────────────────────────────────────────────
+numpy                # 배열 연산, 좌표 계산
+scipy                # 좌표 안정화 등 수학 유틸리티
+
+# ── Web UI 모니터링 ───────────────────────────────────────────
+flask                # MJPEG 스트리밍 서버 (codebaro_monitoring_system.py)
+
+# =============================================================
+# ※ 아래 항목은 pip가 아닌 별도 방법으로 설치합니다.
+# =============================================================
+#
+# [ROS2 Humble — apt 설치]
+#   sudo apt install -y \
+#     ros-humble-rclpy \
+#     ros-humble-std-msgs \
+#     ros-humble-geometry-msgs \
+#     ros-humble-sensor-msgs \
+#     ros-humble-tf2-msgs \
+#     ros-humble-launch \
+#     ros-humble-launch-ros
+#
+# [Isaac Sim 5.1 — NVIDIA Omniverse Launcher로 설치]
+#   Extensions 필수 활성화:
+#     - isaacsim.asset.gen.conveyor
+#     - isaacsim.ros2.bridge
+#
+# [YOLO11 모델]
+#   src/cobot3/cobot3/best.pt  (별도 학습 파일)
+# =============================================================
