@@ -300,6 +300,8 @@ export ROS_DISTRO=humble
 export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 export LD_LIBRARY_PATH=$isaac_sim_package_path/exts/isaacsim.ros2.bridge/humble/lib:$LD_LIBRARY_PATH
 
+---
+
 **실행 인자 설명:**
 
 | 인자               | 기본값                           | 설명                                  |
