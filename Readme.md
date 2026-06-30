@@ -224,21 +224,20 @@ sudo apt install -y \
 
 ### 3. ROS2 워크스페이스 빌드
 
-```bash
-# 워크스페이스 생성 (이미 있으면 건너뜀)
-mkdir -p ~/cobot3_ws/src
-cd ~/cobot3_ws/src
+이 저장소 자체가 ROS2 워크스페이스 구조(`src/cobot3`)이므로, 별도의 워크스페이스를 새로 만들 필요 없이 클론받은 저장소 루트에서 바로 빌드하면 됩니다.
 
-# 패키지 복사 또는 클론
-cp -r /cobot3_ws/src/DooSan_Robotics_IsaacSim_Project/src/cobot3 .
+```bash
+git clone https://github.com/wodud4143/DooSan_Robotics_IsaacSim_Project.git
+cd DooSan_Robotics_IsaacSim_Project
 
 # 빌드
-cd ~/cobot3_ws
 colcon build --symlink-install --packages-select cobot3
 
 # 환경 소싱
 source install/setup.bash
 ```
+
+빌드가 끝나면 저장소 루트에 `build/`, `install/`, `log/` 폴더가 생성됩니다(`.gitignore`에 포함). 이후 모든 `ros2 run` / `ros2 launch` 명령은 이 저장소 루트에서 `source install/setup.bash`를 먼저 실행한 뒤 사용합니다.
 
 ### 4. 월드 USD 파일 다운로드
 
@@ -259,8 +258,8 @@ source install/setup.bash
 
 ```python
 # detection_L.py / detection_R.py 수정
-self.model = YOLO('/home/rokey/cobot3_ws/src/cobot3/cobot3/best.pt')
-#                  ↑ 실제 best.pt 경로로 변경
+self.model = YOLO('/path/to/DooSan_Robotics_IsaacSim_Project/src/cobot3/cobot3/best.pt')
+#                  ↑ 실제 저장소 경로 + best.pt 경로로 변경
 ```
 
 ### 6. Isaac Sim Extension 활성화
@@ -284,22 +283,41 @@ Isaac Sim 실행 후 다음 Extension이 활성화되어 있어야 합니다:
 # Isaac Sim 설치 경로로 이동
 cd /home/rokey/isaac-sim   # 실제 Isaac Sim 설치 경로로 변경
 
-./python.sh /cobot3_ws/src/DooSan_Robotics_IsaacSim_Project/stand_alone.py \
+./python.sh /path/to/DooSan_Robotics_IsaacSim_Project/stand_alone.py \
     --usd /home/rokey/Downloads/dual_suction_tf_barcode_LR.usd \
     --spawn-interval 40.0
 ```
-> rclpy 오류 시 아래 코드 터미널 복사
-```unset PYTHONPATH
+
+> **rclpy 오류 시** — Isaac Sim의 자체 Python 환경과 시스템 ROS2 환경 변수가 충돌하여 `rclpy` import 오류가 발생할 수 있습니다. 이 경우 Isaac Sim 실행 전에 아래 스크립트로 환경 변수를 초기화합니다.
+>
+> `isaac_sim_package_path`는 본인의 Isaac Sim 설치 경로에 맞게 반드시 수정해야 합니다. 일반적으로 다음 위치 중 하나입니다.
+>
+> - 소스 빌드 설치: `~/dev_ws/isaac_sim/isaacsim/_build/linux-x86_64/release`
+> - 패키지 설치(pip/zip 배포판): `~/isaacsim` 또는 `~/.local/share/ov/pkg/isaac-sim-X.X.X`
+>
+> 본인 환경의 정확한 경로는 아래 명령으로 확인할 수 있습니다.
+>
+> ```bash
+> find ~ -maxdepth 4 -type d -name "isaacsim.ros2.bridge" 2>/dev/null
+> ```
+>
+> 위 명령 결과에서 `.../exts/isaacsim.ros2.bridge` 앞부분 경로를 `isaac_sim_package_path`에 그대로 사용하면 됩니다.
+
+```bash
+unset PYTHONPATH
 unset AMENT_PREFIX_PATH
 unset COLCON_PREFIX_PATH
 unset CMAKE_PREFIX_PATH
 unset ROS_PACKAGE_PATH
 
 export isaac_sim_package_path=/home/rokey/dev_ws/isaac_sim/isaacsim/_build/linux-x86_64/release
+#                              ↑ 본인의 Isaac Sim 설치 경로로 반드시 변경
 export ROS_DISTRO=humble
 export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 export LD_LIBRARY_PATH=$isaac_sim_package_path/exts/isaacsim.ros2.bridge/humble/lib:$LD_LIBRARY_PATH
 ```
+
+위 환경 변수 설정 후 같은 터미널에서 `./python.sh stand_alone.py ...` 명령을 다시 실행합니다.
 
 **실행 인자 설명:**
 
@@ -318,7 +336,7 @@ Isaac Sim이 완전히 로드되고 콘솔에 `=== CHECK SORTER ACTIONGRAPH ===`
 
 ```bash
 source /opt/ros/humble/setup.bash
-source ~/cobot3_ws/install/setup.bash
+source /path/to/DooSan_Robotics_IsaacSim_Project/install/setup.bash
 
 ros2 launch cobot3 all_detection.launch.py
 ```
@@ -343,7 +361,7 @@ launch 파일이 `detection_L`과 `detection_R` 노드를 동시에 실행합니
 
 ```bash
 source /opt/ros/humble/setup.bash
-source ~/cobot3_ws/install/setup.bash
+source /path/to/DooSan_Robotics_IsaacSim_Project/install/setup.bash
 
 python3 /path/to/DooSan_Robotics_IsaacSim_Project/codebaro_monitoring_system.py \
     --host 0.0.0.0 \
