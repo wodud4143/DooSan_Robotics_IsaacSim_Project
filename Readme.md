@@ -230,7 +230,7 @@ mkdir -p ~/cobot3_ws/src
 cd ~/cobot3_ws/src
 
 # 패키지 복사 또는 클론
-cp -r /path/to/DooSan_Robotics_IsaacSim_Project/src/cobot3 .
+cp -r /cobot3_ws/src/DooSan_Robotics_IsaacSim_Project/src/cobot3 .
 
 # 빌드
 cd ~/cobot3_ws
@@ -284,7 +284,7 @@ Isaac Sim 실행 후 다음 Extension이 활성화되어 있어야 합니다:
 # Isaac Sim 설치 경로로 이동
 cd /home/rokey/isaac-sim   # 실제 Isaac Sim 설치 경로로 변경
 
-./python.sh /path/to/DooSan_Robotics_IsaacSim_Project/stand_alone.py \
+./python.sh /cobot3_ws/src/DooSan_Robotics_IsaacSim_Project/stand_alone.py \
     --usd /home/rokey/Downloads/dual_suction_tf_barcode_LR.usd \
     --spawn-interval 40.0
 ```
